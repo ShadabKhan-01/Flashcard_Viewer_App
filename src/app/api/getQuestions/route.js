@@ -19,7 +19,7 @@ Return a JSON array of objects with "question" and "answer" fields. Here's the e
 ]
 `
     try {
-        const ai = new GoogleGenAI({ apiKey: process.env.Gemini_Api_Ke });
+        const ai = new GoogleGenAI({ apiKey: process.env.Gemini_Api_Key });
         const response = await ai.models.generateContent({
             model: "gemini-2.0-flash",
             contents: prompt,

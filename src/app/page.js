@@ -1,18 +1,18 @@
 "use client";
 import { useState, useEffect } from "react";
 import Button from "@/components/button";
+import Card from "@/components/card";
 import { motion } from "framer-motion";
 import { flashcardSets } from "@/data/flashcardSets";
+import Loader from "@/components/loader";
 
 export default function FlashcardViewer() {
   const [topic, setTopic] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [flipped, setFlipped] = useState(false);
   const [questionArray, setquestionArray] = useState([])
 
   const handleNext = () => {
-    setFlipped(false);
-    if (currentIndex < flashcardSets[topic].length - 1) {
+    if (currentIndex < flashcardSets[topic].length) {
       setCurrentIndex(currentIndex + 1);
     }
   };
@@ -43,7 +43,7 @@ export default function FlashcardViewer() {
         <h1 className="text-4xl font-bold">Choose a Topic</h1>
         <div className="grid grid-cols-2 gap-10">
           {Object.keys(flashcardSets).map((category) => (
-            <Button key={category} text={category} onClick={() => setTopic(category)}></Button>
+            <Button key={category} text={category} action={() => setTopic(category)}></Button>
           ))}
         </div>
       </div>
@@ -52,12 +52,21 @@ export default function FlashcardViewer() {
 
   const flashcards = questionArray;
   const currentCard = flashcards[currentIndex];
-  const progress = ((currentIndex + 1) / flashcards.length) * 100;
+  const progress = ((currentIndex) / flashcards.length) * 100;
+
+  if (!(flashcards.length > 0)) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4 space-y-6">
+        <Loader />
+        <p className="text-2xl font-bold">Loading...</p>
+      </div>
+
+    )
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 space-y-6">
       <h1 className="text-3xl font-bold">{topic} Flashcards</h1>
-
       <div className="w-full max-w-md">
         <div className="w-full bg-gray-200 rounded-full h-4">
           <motion.div
@@ -68,26 +77,20 @@ export default function FlashcardViewer() {
           />
         </div>
       </div>
-    {currentCard &&
-
-      <Card className="w-full max-w-md cursor-pointer" onClick={() => setFlipped(!flipped)}>
-        <CardContent className="p-8 text-center text-xl font-medium">
-          {flipped ? currentCard.answer : currentCard.question}
-        </CardContent>
-      </Card>
+      {currentCard &&
+        <div className="flex flex-col items-center justify-center p-4 space-y-6">
+          <Card qusetion={currentCard.question} answer={currentCard.answer} />
+          <div className="flex gap-4">
+            <Button text={"I Know This"} action={() => handleNext()} isDisabled={currentIndex > flashcards.length - 1} />
+            <Button text={"Don’t Know"} action={() => handleNext()} isDisabled={currentIndex > flashcards.length - 1} />
+          </div>
+        </div>
       }
-
-      <div className="flex gap-4">
-        <Button onClick={handleNext} disabled={currentIndex >= flashcards.length - 1}>
-          I Know This
-        </Button>
-        <Button onClick={handleNext} disabled={currentIndex >= flashcards.length - 1}>
-          Don’t Know
-        </Button>
-      </div>
-
-      {currentIndex >= flashcards.length - 1 && (
+      {currentIndex > flashcards.length - 1 && (
+        <div className="flex flex-col items-center justify-center p-4 space-y-6">
         <p className="text-green-600 font-semibold">All cards completed!</p>
+        <Button text={"Retry"} action={()=>{window.location.reload()}}/>
+        </div>
       )}
     </div>
   );
