@@ -10,6 +10,8 @@ export default function FlashcardViewer() {
   const [topic, setTopic] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [questionArray, setquestionArray] = useState([])
+  const [iKnow, setiKnow] = useState(0);
+  const [iDontKnow, setiDontKnow] = useState(0);
 
   const handleNext = () => {
     if (currentIndex < flashcardSets[topic].length) {
@@ -39,14 +41,23 @@ export default function FlashcardViewer() {
 
   if (!topic) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-4 space-y-6">
+      <motion.div className="flex flex-col items-center justify-center min-h-screen p-4 space-y-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+      >
         <h1 className="text-4xl font-bold">Choose a Topic</h1>
-        <div className="grid grid-cols-2 gap-10">
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 gap-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+        >
           {Object.keys(flashcardSets).map((category) => (
             <Button key={category} text={category} action={() => setTopic(category)}></Button>
           ))}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     );
   }
 
@@ -59,6 +70,7 @@ export default function FlashcardViewer() {
       <div className="flex flex-col items-center justify-center min-h-screen p-4 space-y-6">
         <Loader />
         <p className="text-2xl font-bold">Loading...</p>
+        <p className="text-2xl">Generating Question by the AI</p>
       </div>
 
     )
@@ -78,19 +90,41 @@ export default function FlashcardViewer() {
         </div>
       </div>
       {currentCard &&
-        <div className="flex flex-col items-center justify-center p-4 space-y-6">
+        <motion.div
+          className="flex flex-col items-center justify-center space-y-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+        >
           <Card qusetion={currentCard.question} answer={currentCard.answer} />
-          <div className="flex gap-4">
-            <Button text={"I Know This"} action={() => handleNext()} isDisabled={currentIndex > flashcards.length - 1} />
-            <Button text={"Don’t Know"} action={() => handleNext()} isDisabled={currentIndex > flashcards.length - 1} />
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Button text={"I Know This"}
+             action={() => {
+              handleNext();
+              setiKnow(iKnow+1);
+            }}
+             isDisabled={currentIndex > flashcards.length - 1} />
+            <Button text={"Don’t Know"}
+             action={() => {
+              handleNext();
+              setiDontKnow(iDontKnow+1)
+              }} isDisabled={currentIndex > flashcards.length - 1} />
           </div>
-        </div>
+        </motion.div>
       }
       {currentIndex > flashcards.length - 1 && (
-        <div className="flex flex-col items-center justify-center p-4 space-y-6">
-        <p className="text-green-600 font-semibold">All cards completed!</p>
-        <Button text={"Retry"} action={()=>{window.location.reload()}}/>
-        </div>
+        <motion.div
+          className="flex flex-col items-center justify-center space-y-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}>
+          <p className="text-green-600 font-semibold">All cards completed!</p>
+          <div className="flex gap-10">
+            <p>I Know : {iKnow}</p>
+            <p>I Don’t Know : {iDontKnow}</p>
+          </div>
+          <Button text={"Retry"} action={() => { window.location.reload() }} />
+        </motion.div>
       )}
     </div>
   );

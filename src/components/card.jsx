@@ -26,7 +26,6 @@ const StyledWrapper = styled.div`
     width: 190px;
     height: 254px;
     perspective: 1000px;
-    font-family: sans-serif;
   }
 
   .title {

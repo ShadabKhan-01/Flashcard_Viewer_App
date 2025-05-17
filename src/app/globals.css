@@ -5,4 +5,8 @@
 body{
   font-family: "Ancizar Sans", sans-serif;
   font-optical-sizing: auto;
+  
+}
+body::-webkit-scrollbar {
+  display: none;
 }
